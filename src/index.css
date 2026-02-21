@@ -19,3 +19,12 @@
 .tool-card {
   @apply relative overflow-hidden rounded-2xl border border-neutral-200 bg-white p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer;
 }
+
+@keyframes flash {
+  0% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+.animate-flash {
+  animation: flash 0.2s ease-out forwards;
+}

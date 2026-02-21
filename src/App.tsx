@@ -29,7 +29,10 @@ import {
   Languages,
   FileSearch,
   Wand2,
-  Scan
+  Scan,
+  Search,
+  FileDown,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ToolCard } from './components/ToolCard';
@@ -43,6 +46,17 @@ import { RotatePDF } from './components/tools/RotatePDF';
 import { ProtectPDF } from './components/tools/ProtectPDF';
 import { RemovePages } from './components/tools/RemovePages';
 import { AddWatermark } from './components/tools/AddWatermark';
+import { PptToPdf } from './components/tools/PptToPdf';
+import { EditPDF } from './components/tools/EditPDF';
+import { OCRTool } from './components/tools/OCRTool';
+import { TranslatePDF } from './components/tools/TranslatePDF';
+import { UnlockPDF } from './components/tools/UnlockPDF';
+import { HtmlToPdf } from './components/tools/HtmlToPdf';
+import { ScanToPDF } from './components/tools/ScanToPDF';
+import { PdfToWord } from './components/tools/PdfToWord';
+import { CropPDF } from './components/tools/CropPDF';
+import { SignPDF } from './components/tools/SignPDF';
+import { CompressPDF } from './components/tools/CompressPDF';
 
 type ToolType = 
   | 'merge-pdf' 
@@ -64,16 +78,22 @@ type ToolType =
   | 'translate-pdf'
   | 'ocr-pdf'
   | 'scan-to-pdf'
+  | 'html-to-pdf'
+  | 'pdf-to-word'
+  | 'compress-pdf'
   | null;
 
 export default function App() {
   const [activeTool, setActiveTool] = React.useState<ToolType>(null);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [isMobileSearchVisible, setIsMobileSearchVisible] = React.useState(false);
 
   const toolCategories = [
     {
       name: 'Organize PDF',
       tools: [
         { id: 'merge-pdf', title: 'Merge PDF', description: 'Combine multiple PDFs into one.', icon: FileStack, color: 'bg-red-50 text-red-600' },
+        { id: 'compress-pdf', title: 'Compress PDF', description: 'Reduce PDF size while keeping quality.', icon: FileDown, color: 'bg-emerald-50 text-emerald-600' },
         { id: 'split-pdf', title: 'Split PDF', description: 'Separate pages into independent files.', icon: Scissors, color: 'bg-rose-50 text-rose-600' },
         { id: 'remove-pages', title: 'Remove Pages', description: 'Delete pages from your PDF document.', icon: Trash2, color: 'bg-orange-50 text-orange-600' },
         { id: 'scan-to-pdf', title: 'Scan to PDF', description: 'Convert scans into PDF documents.', icon: Scan, color: 'bg-amber-50 text-amber-600' },
@@ -133,15 +153,19 @@ export default function App() {
       case 'protect-pdf': return <ProtectPDF />;
       case 'remove-pages': return <RemovePages />;
       case 'add-watermark': return <AddWatermark />;
-      case 'ppt-to-pdf': 
-      case 'unlock-pdf':
+      case 'ppt-to-pdf': return <PptToPdf />;
+      case 'edit-pdf': return <EditPDF />;
+      case 'ocr-pdf': return <OCRTool />;
+      case 'translate-pdf': return <TranslatePDF />;
+      case 'unlock-pdf': return <UnlockPDF />;
+      case 'html-to-pdf': return <HtmlToPdf />;
+      case 'scan-to-pdf': return <ScanToPDF />;
+      case 'pdf-to-word': return <PdfToWord />;
+      case 'crop-pdf': return <CropPDF />;
+      case 'sign-pdf': return <SignPDF />;
+      case 'compress-pdf': return <CompressPDF />;
+      case 'protect-pdf': return <ProtectPDF />;
       case 'add-page-numbers':
-      case 'crop-pdf':
-      case 'edit-pdf':
-      case 'sign-pdf':
-      case 'translate-pdf':
-      case 'ocr-pdf':
-      case 'scan-to-pdf':
         return (
           <div className="mx-auto max-w-2xl text-center py-12">
             <Wand2 className="h-16 w-16 text-indigo-600 mx-auto mb-4 animate-pulse" />
@@ -169,7 +193,11 @@ export default function App() {
           <div className="flex h-16 items-center justify-between">
             <div 
               className="flex items-center gap-2 cursor-pointer group"
-              onClick={() => setActiveTool(null)}
+              onClick={() => {
+                setActiveTool(null);
+                setSearchQuery('');
+                setIsMobileSearchVisible(false);
+              }}
             >
               <div className="rounded-lg bg-indigo-600 p-2 text-white transition-transform group-hover:scale-110">
                 <LayoutGrid className="h-5 w-5" />
@@ -184,12 +212,64 @@ export default function App() {
             </nav>
 
             <div className="flex items-center gap-4">
-              <button className="hidden sm:block text-sm font-medium text-neutral-600 hover:text-neutral-900">Login</button>
-              <button className="rounded-full bg-neutral-900 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-neutral-800 shadow-sm">
-                Sign Up
+              <div className="relative hidden sm:block">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                <input
+                  type="text"
+                  placeholder="Search tools..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-64 rounded-full border border-neutral-200 bg-neutral-50 py-2 pl-10 pr-10 text-sm focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-200 transition-all"
+                />
+                {searchQuery && (
+                  <button 
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              <button 
+                onClick={() => setIsMobileSearchVisible(!isMobileSearchVisible)}
+                className="sm:hidden rounded-full p-2 text-neutral-600 hover:bg-neutral-100 transition-colors"
+              >
+                {isMobileSearchVisible ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
               </button>
             </div>
           </div>
+          
+          {/* Mobile Search Bar */}
+          <AnimatePresence>
+            {isMobileSearchVisible && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="sm:hidden overflow-hidden pb-4"
+              >
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                  <input
+                    autoFocus
+                    type="text"
+                    placeholder="Search tools..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full rounded-xl border border-neutral-200 bg-neutral-50 py-3 pl-10 pr-10 text-sm focus:border-indigo-500 focus:bg-white focus:outline-none transition-all"
+                  />
+                  {searchQuery && (
+                    <button 
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </header>
 
@@ -209,30 +289,61 @@ export default function App() {
                     Every tool you need to work with <br />
                     <span className="text-indigo-600">PDFs and Images</span>
                   </h1>
-                  <p className="mx-auto max-w-2xl text-lg text-neutral-500">
-                    PDFly is your all-in-one web utility for managing documents and photos. 
-                    Fast, secure, and completely free to use.
-                  </p>
+          
                 </div>
 
                 <div className="space-y-16">
-                  {toolCategories.map((category) => (
-                    <div key={category.name} className="space-y-6">
-                      <div className="flex items-center gap-4">
-                        <h2 className="text-xl font-bold text-neutral-900 uppercase tracking-widest">{category.name}</h2>
-                        <div className="h-px flex-grow bg-neutral-200" />
+                  {(() => {
+                    const categoriesWithTools = toolCategories.map(category => ({
+                      ...category,
+                      filteredTools: category.tools.filter(tool => 
+                        tool.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                        tool.description.toLowerCase().includes(searchQuery.toLowerCase())
+                      )
+                    })).filter(cat => cat.filteredTools.length > 0);
+
+                    if (categoriesWithTools.length === 0 && searchQuery) {
+                      return (
+                        <div className="text-center py-20 space-y-4">
+                          <div className="inline-flex items-center justify-center p-6 bg-neutral-50 rounded-full text-neutral-300 mb-4">
+                            <Search className="h-12 w-12" />
+                          </div>
+                          <h3 className="text-2xl font-bold text-neutral-900">No tools found</h3>
+                          <p className="text-neutral-500">
+                            We couldn't find any tools matching "{searchQuery}". <br />
+                            Try a different keyword or browse the categories.
+                          </p>
+                          <button 
+                            onClick={() => setSearchQuery('')}
+                            className="mt-4 text-indigo-600 font-bold hover:underline"
+                          >
+                            Clear search
+                          </button>
+                        </div>
+                      );
+                    }
+
+                    return categoriesWithTools.map((category) => (
+                      <div key={category.name} className="space-y-6">
+                        <div className="flex items-center gap-4">
+                          <h2 className="text-xl font-bold text-neutral-900 uppercase tracking-widest">{category.name}</h2>
+                          <div className="h-px flex-grow bg-neutral-200" />
+                        </div>
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                          {category.filteredTools.map((tool) => (
+                            <ToolCard
+                              key={tool.id}
+                              {...tool}
+                              onClick={() => {
+                                setActiveTool(tool.id as ToolType);
+                                setIsMobileSearchVisible(false);
+                              }}
+                            />
+                          ))}
+                        </div>
                       </div>
-                      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                        {category.tools.map((tool) => (
-                          <ToolCard
-                            key={tool.id}
-                            {...tool}
-                            onClick={() => setActiveTool(tool.id as ToolType)}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                    ));
+                  })()}
                 </div>
               </motion.div>
             ) : (
@@ -244,7 +355,10 @@ export default function App() {
                 className="space-y-8"
               >
                 <button
-                  onClick={() => setActiveTool(null)}
+                  onClick={() => {
+                    setActiveTool(null);
+                    setSearchQuery('');
+                  }}
                   className="group flex items-center gap-2 text-sm font-semibold text-neutral-500 hover:text-neutral-900 transition-colors"
                 >
                   <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />

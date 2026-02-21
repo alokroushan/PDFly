@@ -3,8 +3,11 @@ import * as pdfjs from 'pdfjs-dist';
 import { FileUploader, FileList } from '../FileUploader';
 import { Download, Loader2, ArrowRight } from 'lucide-react';
 
-// Set worker path for pdfjs
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Initialize PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.mjs',
+  import.meta.url
+).toString();
 
 export const PdfToJpg: React.FC = () => {
   const [files, setFiles] = React.useState<File[]>([]);

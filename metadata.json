@@ -1,5 +1,5 @@
 {
   "name": "PDFly - All-in-One PDF & Image Tools",
   "description": "A comprehensive suite of online tools to merge, split, compress, and convert PDFs and images.",
-  "requestFramePermissions": []
+  "requestFramePermissions": ["camera"]
 }
